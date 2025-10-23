@@ -1,0 +1,95 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "首頁";
+}
+
+<section class="hero mb-5">
+    <div class="row align-items-center">
+        <div class="col-lg-7">
+            <h1 class="display-5 fw-bold">探索下一本靈感來源</h1>
+            <p class="lead">依照類別搜尋、查看書目詳細與相關推薦，輕鬆找到理想的書籍。</p>
+            <div class="d-flex gap-2">
+                <a class="btn btn-primary btn-lg" asp-page="/Books/Index">立即找書</a>
+                <a class="btn btn-outline-secondary btn-lg" asp-page="/NewReleases/Index">看新書</a>
+            </div>
+        </div>
+        <div class="col-lg-5 text-lg-end mt-4 mt-lg-0">
+            <img src="https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=800" class="img-fluid rounded shadow" alt="書店" />
+        </div>
+    </div>
+</section>
+
+<section class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4 section-title">最新上架</h2>
+        <a asp-page="/NewReleases/Index" class="btn btn-sm btn-outline-primary">更多新書</a>
+    </div>
+    <div class="row g-4">
+        @foreach (var book in Model.NewBooks)
+        {
+            <div class="col-md-6 col-xl-3">
+                <div class="card book-card h-100">
+                    <img src="@(string.IsNullOrEmpty(book.CoverImageUrl) ? "https://placehold.co/400x600" : book.CoverImageUrl)" class="card-img-top" alt="@book.Title" />
+                    <div class="card-body">
+                        <h3 class="h5 card-title">@book.Title</h3>
+                        <p class="card-subtitle text-muted mb-2">@book.Author</p>
+                        <p class="small text-muted">上架日期：@book.PublishedOn.ToString("yyyy/MM/dd")</p>
+                        <a asp-page="/Books/Details" asp-route-id="@book.Id" class="stretched-link">查看內容</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<section class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4 section-title">點閱排行</h2>
+        <a asp-page="/Books/Index" asp-route-sortBy="Popularity" class="btn btn-sm btn-outline-primary">查看完整排行</a>
+    </div>
+    <div class="list-group shadow-sm">
+        @foreach (var book in Model.PopularBooks)
+        {
+            <a asp-page="/Books/Details" asp-route-id="@book.Id" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="fw-semibold">@book.Title</span>
+                    <small class="text-muted ms-2">@book.Author</small>
+                </div>
+                <span class="badge bg-primary rounded-pill">@book.ViewCount 次</span>
+            </a>
+        }
+    </div>
+</section>
+
+<section class="mb-5">
+    <div class="row align-items-center">
+        <div class="col-lg-6">
+            <h2 class="h4 section-title">訂閱新書通知</h2>
+            <p class="text-muted">留下 email，當新書上架時我們會第一時間通知您。</p>
+            <form method="post" asp-page-handler="Subscribe" data-subscription-form>
+                <div class="input-group input-group-lg mb-2">
+                    <input asp-for="SubscriptionEmail" class="form-control" placeholder="您的 email" />
+                    <button class="btn btn-primary" type="submit">立即訂閱</button>
+                </div>
+                <span class="text-danger">@Html.ValidationMessageFor(m => m.SubscriptionEmail)</span>
+                @if (!string.IsNullOrEmpty(Model.SubscriptionMessage))
+                {
+                    <div class="alert @(Model.SubscriptionSuccess ? "alert-success" : "alert-info") mt-3 mb-0" role="alert">
+                        @Model.SubscriptionMessage
+                    </div>
+                }
+            </form>
+        </div>
+        <div class="col-lg-6 mt-4 mt-lg-0">
+            <div class="p-4 bg-white rounded shadow-sm">
+                <h3 class="h5 mb-3">為什麼要訂閱？</h3>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">・ 精選新書通知</li>
+                    <li class="mb-2">・ 熱門書籍整理</li>
+                    <li>・ 活動與優惠消息</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>

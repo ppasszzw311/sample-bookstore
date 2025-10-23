@@ -1,0 +1,134 @@
+@page
+@model BookStore.Pages.Admin.Books.IndexModel
+@{
+    ViewData["Title"] = "書目管理";
+}
+
+<partial name="~/Pages/Admin/_Navigation.cshtml" />
+
+<h1 class="mb-4">書目管理</h1>
+
+<div class="row g-4">
+    <div class="col-xl-5">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5 mb-3">新增書目</h2>
+                <form method="post" asp-page-handler="Add">
+                    <div class="mb-3">
+                        <label asp-for="Input.Title" class="form-label">書名</label>
+                        <input asp-for="Input.Title" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Input.Title"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Input.Author" class="form-label">作者</label>
+                        <input asp-for="Input.Author" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Input.Author"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Input.CategoryId" class="form-label">分類</label>
+                        <select asp-for="Input.CategoryId" class="form-select" asp-items="Model.CategorySelectList">
+                            <option value="">選擇分類</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="Input.CategoryId"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Input.PublishedOn" class="form-label">出版日期</label>
+                        <input asp-for="Input.PublishedOn" class="form-control" type="date" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Input.Price" class="form-label">價格</label>
+                        <input asp-for="Input.Price" class="form-control" type="number" step="1" min="0" />
+                        <span class="text-danger" asp-validation-for="Input.Price"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Input.CoverImageUrl" class="form-label">封面網址</label>
+                        <input asp-for="Input.CoverImageUrl" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Input.Tags" class="form-label">標籤 (以逗號分隔)</label>
+                        <input asp-for="Input.Tags" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Input.Description" class="form-label">簡介</label>
+                        <textarea asp-for="Input.Description" class="form-control" rows="4"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">新增書目</button>
+                </form>
+                @if (!string.IsNullOrEmpty(Model.StatusMessage))
+                {
+                    <div class="alert alert-success mt-3">@Model.StatusMessage</div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-7">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h5 mb-3">批次匯入</h2>
+                <p class="text-muted">支援 CSV 欄位：Title, Author, Category, PublishedOn, Price, Description, CoverImageUrl, Tags。</p>
+                <form method="post" asp-page-handler="Batch">
+                    <textarea asp-for="BatchContent" class="form-control" rows="8" placeholder="貼上 CSV 內容"></textarea>
+                    <button type="submit" class="btn btn-outline-primary mt-3">開始匯入</button>
+                </form>
+                @if (!string.IsNullOrEmpty(Model.BatchStatusMessage))
+                {
+                    <div class="alert alert-success mt-3">@Model.BatchStatusMessage</div>
+                }
+                @if (Model.BatchErrors.Any())
+                {
+                    <div class="alert alert-danger mt-3">
+                        <p class="mb-2">匯入遇到以下問題：</p>
+                        <ul class="mb-0">
+                            @foreach (var error in Model.BatchErrors)
+                            {
+                                <li>@error</li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5 mb-3">書目總覽 (@Model.Books.Count)</h2>
+                @if (!Model.Books.Any())
+                {
+                    <p class="text-muted">尚未新增任何書目。</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>書名</th>
+                                    <th>作者</th>
+                                    <th>分類</th>
+                                    <th>出版日期</th>
+                                    <th>價格</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var book in Model.Books.OrderByDescending(b => b.PublishedOn))
+                                {
+                                    var category = Model.Categories.FirstOrDefault(c => c.Id == book.CategoryId)?.Name ?? "-";
+                                    <tr>
+                                        <td>@book.Title</td>
+                                        <td>@book.Author</td>
+                                        <td>@category</td>
+                                        <td>@book.PublishedOn.ToString("yyyy/MM/dd")</td>
+                                        <td>$@book.Price</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+</div>
+</div>
+</div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,67 @@
+@page
+@model BookStore.Pages.Admin.Categories.IndexModel
+@{
+    ViewData["Title"] = "分類管理";
+}
+
+<partial name="~/Pages/Admin/_Navigation.cshtml" />
+
+<h1 class="mb-4">分類管理</h1>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5 mb-3">新增分類</h2>
+                <form method="post">
+                    <div class="mb-3">
+                        <label asp-for="Input.Name" class="form-label">分類名稱</label>
+                        <input asp-for="Input.Name" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Input.Name"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Input.Description" class="form-label">描述</label>
+                        <textarea asp-for="Input.Description" class="form-control" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">新增分類</button>
+                </form>
+                @if (!string.IsNullOrEmpty(Model.StatusMessage))
+                {
+                    <div class="alert alert-success mt-3" role="alert">
+                        @Model.StatusMessage
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5 mb-3">現有分類 (@Model.Categories.Count)</h2>
+                @if (!Model.Categories.Any())
+                {
+                    <p class="text-muted">尚未建立任何分類。</p>
+                }
+                else
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var category in Model.Categories)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="fw-semibold">@category.Name</div>
+                                    <small class="text-muted">@category.Description</small>
+                                </div>
+                                <span class="badge bg-secondary">@category.Id.ToString()</span>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
