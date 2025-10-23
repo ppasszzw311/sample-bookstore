@@ -1,0 +1,54 @@
+@page
+@model BookStore.Pages.NewReleases.IndexModel
+@{
+    ViewData["Title"] = "新書專區";
+}
+
+<h1 class="mb-4">新書專區</h1>
+
+<form method="get" class="mb-4">
+    <div class="row g-3 align-items-center">
+        <div class="col-auto">
+            <label class="col-form-label" asp-for="Days">顯示最近</label>
+        </div>
+        <div class="col-auto">
+            <select asp-for="Days" class="form-select">
+                @foreach (var option in Model.DayOptions)
+                {
+                    <option value="@option" selected="@(Model.Days == option ? "selected" : null)">@option 天</option>
+                }
+            </select>
+        </div>
+        <div class="col-auto">
+            <span>內的新書</span>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">套用</button>
+        </div>
+    </div>
+</form>
+
+@if (!Model.Books.Any())
+{
+    <div class="alert alert-info">近期沒有新書上架，請稍後再來看看！</div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var book in Model.Books)
+        {
+            <div class="col-md-6 col-xl-4">
+                <div class="card book-card h-100">
+                    <img src="@(string.IsNullOrEmpty(book.CoverImageUrl) ? "https://placehold.co/400x600" : book.CoverImageUrl)" class="card-img-top" alt="@book.Title" />
+                    <div class="card-body">
+                        <h3 class="h5 card-title">@book.Title</h3>
+                        <p class="card-subtitle text-muted mb-2">@book.Author</p>
+                        <p class="small text-muted">出版日期：@book.PublishedOn.ToString("yyyy/MM/dd")</p>
+                        <p class="card-text">@(string.IsNullOrWhiteSpace(book.Description) ? "尚無簡介" : book.Description)</p>
+                        <a asp-page="/Books/Details" asp-route-id="@book.Id" class="btn btn-outline-primary">查看內容</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

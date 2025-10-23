@@ -1,0 +1,12 @@
+@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "發生錯誤";
+}
+
+<div class="text-center">
+    <h1 class="display-5">糟糕！發生錯誤</h1>
+    <p class="lead">很抱歉，系統發生無法預期的錯誤，請稍後再試。</p>
+    <p class="text-muted">@Model.RequestId</p>
+    <a asp-page="/Index" class="btn btn-primary">回首頁</a>
+</div>

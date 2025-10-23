@@ -1,0 +1,14 @@
+@{
+    var currentPage = Context.Request.Path;
+}
+<ul class="nav nav-pills mb-4">
+    <li class="nav-item">
+        <a class="nav-link @(currentPage.StartsWithSegments("/Admin/Categories") ? "active" : string.Empty)" asp-page="/Admin/Categories/Index">分類管理</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(currentPage.StartsWithSegments("/Admin/Books") ? "active" : string.Empty)" asp-page="/Admin/Books/Index">書目管理</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(currentPage.StartsWithSegments("/Admin/Statistics") ? "active" : string.Empty)" asp-page="/Admin/Statistics/Index">統計報表</a>
+    </li>
+</ul>

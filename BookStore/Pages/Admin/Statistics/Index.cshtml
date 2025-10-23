@@ -1,0 +1,74 @@
+@page
+@model BookStore.Pages.Admin.Statistics.IndexModel
+@{
+    ViewData["Title"] = "書目統計";
+    var totalBooks = Model.Books.Count;
+    var averagePrice = totalBooks > 0 ? Model.Books.Average(b => b.Price) : 0m;
+}
+
+<partial name="~/Pages/Admin/_Navigation.cshtml" />
+
+<h1 class="mb-4">書目統計</h1>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="display-5 fw-bold text-primary">@totalBooks</div>
+                <p class="text-muted mb-0">書目總數</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="display-5 fw-bold text-success">@averagePrice.ToString("0")</div>
+                <p class="text-muted mb-0">平均價格</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="display-5 fw-bold text-warning">@Model.Books.MaxBy(b => b.ViewCount)?.ViewCount ?? 0</div>
+                <p class="text-muted mb-0">最高點閱數</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h2 class="h5 mb-3">分類統計</h2>
+        @if (!Model.Statistics.Any())
+        {
+            <p class="text-muted">尚無統計資料。</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>分類</th>
+                            <th>書目數量</th>
+                            <th>平均價格</th>
+                            <th>價格區間</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var stat in Model.Statistics)
+                        {
+                            <tr>
+                                <td>@stat.CategoryName</td>
+                                <td>@stat.BookCount</td>
+                                <td>$@stat.AveragePrice.ToString("0")</td>
+                                <td>$@stat.LowestPrice.ToString("0") - $@stat.HighestPrice.ToString("0")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
